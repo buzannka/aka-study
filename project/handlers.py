@@ -12,7 +12,6 @@ def serve_static(address, root):
         try:
             fd = "%s/%s" % (root, request.url[size:])
             request.start_response(content_length=str(os.stat(fd).st_size))
-            request.headers_sent = True
             return open(fd)
 
         except IOError:

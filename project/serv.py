@@ -43,6 +43,7 @@ class Request(object):
     def start_response(self, code = '200', status = 'OK', **headers):
         '''begin http reply, send status and headers'''
         self.conn.send(encode_http(("HTTP/1.0", code, status), data='', **headers))
+        self.headers_sent = True
         return True
 
     def reply(self, data, code = '200', status = 'OK',  **headers):
