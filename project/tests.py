@@ -1,8 +1,9 @@
 from serv import HTTPServer,  parse_http, encode_http, Request
-from handlers import serve_static
+from handlers import serve_static, iterable_files_list
 from nose.tools import eq_, raises
 from coverage import coverage
 from cStringIO import StringIO
+import os
 
 class MockConnection:
 
@@ -148,6 +149,13 @@ class TestHandlers(object):
         self.server.register(lambda r: True, lambda r: ["123", "456", "789"])
         request, header, body = self.client('GET', '/')
         eq_(body, "123456789")
+
+    def test_autoindex(self):
+         self.server.register(*serve_static(address='/', root=".")) 
+         headers = {'AUTOINDEX': True}
+         reply, headers, body = self.client('GET', '/.', autoindex = headers['AUTOINDEX'])
+         files_list = os.listdir('.')
+         eq_(body,''.join(iterable_files_list(files_list)))
 
 
 class TestHTTPRequest:

@@ -70,7 +70,7 @@ class HTTPServer(object):
 
     def on_connect(self, conn, addr):
         (method, url, proto), headers, body = parse_http(conn.recv(1024))
-        self.on_request(Request (method, url, body, conn))
+        self.on_request(Request (method, url, body, conn, **headers))
 
     def on_request(self, request):
         try:
