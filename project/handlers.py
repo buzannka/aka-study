@@ -1,12 +1,9 @@
-import os
+import os, time
 from serv import HTTPError
 
-def iterable_files_list(files_list):
-   for file in files_list:
-      yield ("%s \t %s \n"%(file, str(os.stat(file).st_size)))
 
 
-def serve_static(address, root): 
+def serve_static(address, root, **options): 
 
     size = len(address)
     def pattern(request):
@@ -14,10 +11,11 @@ def serve_static(address, root):
 
     def handler(request): 
         path = "%s/%s" % (root, request.url[size:])
-        if os.path.isdir(path) and request.headers['AUTOINDEX']:
+        if os.path.isdir(path) and options['autoindex']:
             request.start_response()
             files_list = os.listdir(path)
-            return iterable_files_list(files_list)  
+            return ["%s\t%s\t%s\n"%(file, str(os.stat(file).st_size), time.strftime('%a, %d %b %Y %H:%I:%S GMT', time.gmtime(os.stat(file).st_mtime))) for file in files_list]
+
         try:
             request.start_response(content_length=str(os.stat(path).st_size))
             return open(path)

@@ -1,9 +1,9 @@
 from serv import HTTPServer,  parse_http, encode_http, Request
-from handlers import serve_static, iterable_files_list
+from handlers import serve_static
 from nose.tools import eq_, raises
 from coverage import coverage
 from cStringIO import StringIO
-import os
+import os, time
 
 class MockConnection:
 
@@ -150,12 +150,10 @@ class TestHandlers(object):
         request, header, body = self.client('GET', '/')
         eq_(body, "123456789")
 
-    def test_autoindex(self):
-         self.server.register(*serve_static(address='/', root=".")) 
-         headers = {'AUTOINDEX': True}
-         reply, headers, body = self.client('GET', '/.', autoindex = headers['AUTOINDEX'])
-         files_list = os.listdir('.')
-         eq_(body,''.join(iterable_files_list(files_list)))
+    def test_autoindex(self): 
+         self.server.register(*serve_static(address='/', root=".", autoindex=True))  
+         reply, headers, body = self.client('GET', '/.')        
+         eq_(body,''.join(["%s\t%s\t%s\n"%(file, str(os.stat(file).st_size), time.strftime('%a, %d %b %Y %H:%I:%S GMT', time.gmtime(os.stat(file).st_mtime))) for file in os.listdir('.')]))
 
 
 class TestHTTPRequest:
