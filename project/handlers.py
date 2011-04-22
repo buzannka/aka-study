@@ -14,8 +14,8 @@ def serve_static(address, root, **options):
         if os.path.isdir(path) and options['autoindex']:
             request.start_response(content_type='text/html')
             request.headers_sent = True
-            files_list = os.listdir(path)
-            return ('<pre><a href="%s">%s</a> &#09 %s &#09 %s</pre>'%(file,file, str(os.stat(file).st_size), time.strftime('%a, %d %b %Y %H:%I:%S GMT', time.gmtime(os.stat(file).st_mtime))) for file in files_list)
+            files_list = sorted((os.stat('%s%s' % (path, name)).st_mode, name) for name in os.listdir(path))
+            return '<br/>'.join(('<a href="%s/"><b>%s</b></a>' if mode else '<a href="%s">%s</a>')  % (name, name) for mode, name in files_list)
 
         try:
             request.start_response(content_length=str(os.stat(path).st_size))
