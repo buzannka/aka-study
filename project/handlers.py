@@ -12,9 +12,10 @@ def serve_static(address, root, **options):
     def handler(request): 
         path = "%s/%s" % (root, request.url[size:])
         if os.path.isdir(path) and options['autoindex']:
-            request.start_response()
+            request.start_response(content_type='text/html')
+            request.headers_sent = True
             files_list = os.listdir(path)
-            return ["%s\t%s\t%s\n"%(file, str(os.stat(file).st_size), time.strftime('%a, %d %b %Y %H:%I:%S GMT', time.gmtime(os.stat(file).st_mtime))) for file in files_list]
+            return ('<pre><a href="%s">%s</a> &#09 %s &#09 %s</pre>'%(file,file, str(os.stat(file).st_size), time.strftime('%a, %d %b %Y %H:%I:%S GMT', time.gmtime(os.stat(file).st_mtime))) for file in files_list)
 
         try:
             request.start_response(content_length=str(os.stat(path).st_size))

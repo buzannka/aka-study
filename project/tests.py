@@ -152,8 +152,8 @@ class TestHandlers(object):
 
     def test_autoindex(self): 
          self.server.register(*serve_static(address='/', root=".", autoindex=True))  
-         reply, headers, body = self.client('GET', '/.')        
-         eq_(body,''.join(["%s\t%s\t%s\n"%(file, str(os.stat(file).st_size), time.strftime('%a, %d %b %Y %H:%I:%S GMT', time.gmtime(os.stat(file).st_mtime))) for file in os.listdir('.')]))
+         reply, headers, body = self.client('GET', '/.')  
+         eq_(body,''.join(['<pre><a href="%s">%s</a> &#09 %s &#09 %s</pre>'%(file,file, str(os.stat(file).st_size), time.strftime('%a, %d %b %Y %H:%I:%S GMT', time.gmtime(os.stat(file).st_mtime))) for file in os.listdir('.')]))
 
 
 class TestHTTPRequest:
