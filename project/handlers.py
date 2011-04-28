@@ -12,7 +12,8 @@ def serve_static(address, root, **options):
     def handler(request): 
         path = "%s/%s" % (root, request.url[size:])
         if os.path.isdir(path) and options['autoindex']:
-            files_list = sorted((((not os.path.isdir('%s/%s' % (path, name))), name) for name in os.listdir(path) if not name.startswith('.')))
+            files_list = sorted((((not os.path.isdir('%s/%s' % (path, name))), name) for name in os.listdir(path) if not name.startswith('.')), key=lambda name: name[1].lower())
+            files_list = sorted(files_list, key=lambda name: name[0])
             files_list.insert(0, (False, '..'))
             body = '<br/>\n'.join(('<a href="%s">%s</a>' if mode else '<a href="%s/"><b>%s/</b></a>')  % (name, name) for mode, name in files_list)
             request.reply(body, content_type='text/html; charset=utf-8')
