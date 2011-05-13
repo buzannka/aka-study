@@ -1,8 +1,6 @@
 import os, time
 from serv import HTTPError
 
-
-
 def serve_static(address, root, **options): 
 
     size = len(address)
